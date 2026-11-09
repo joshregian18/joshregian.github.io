@@ -1,0 +1,413 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Josh Regian</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout concept: a payroll-statement page. Single column of ledger rows,
+     label rail on the left, dotted leaders between label and value,
+     periods set in tabular mono like figures on a payslip. */
+  :root {
+    --bg: #F2F5F7;
+    --surface: #FFFFFF;
+    --fg: #0F1B2D;
+    --muted: #53627A;
+    --line: #D3DBE4;
+    --accent: #0F766E;
+    --accent-soft: #DCF0ED;
+    --accent-ink: #FFFFFF;
+    --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1219;
+      --surface: #111B25;
+      --fg: #E7EEF4;
+      --muted: #93A3B5;
+      --line: #243342;
+      --accent: #4FD1B8;
+      --accent-soft: #12302C;
+      --accent-ink: #06201B;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1219;
+    --surface: #111B25;
+    --fg: #E7EEF4;
+    --muted: #93A3B5;
+    --line: #243342;
+    --accent: #4FD1B8;
+    --accent-soft: #12302C;
+    --accent-ink: #06201B;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-block: 0 4rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+    background: var(--bg); z-index: 10;
+  }
+  .wrap { max-width: 1040px; margin-inline: auto; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  /* ---------- top bar ---------- */
+  .top {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .8rem; }
+  .brand { font-family: var(--font-display); font-weight: 700; text-decoration: none; letter-spacing: -.01em; }
+  .top nav { display: flex; gap: 1.4rem; font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+  .top nav a { text-decoration: none; color: var(--muted); padding-block: .25rem; border-bottom: 1px solid transparent; }
+  .top nav a:hover { color: var(--fg); border-bottom-color: var(--accent); }
+  .theme-btn {
+    font: inherit; font-family: var(--font-mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase;
+    background: transparent; color: var(--fg); border: 1px solid var(--line); border-radius: 999px;
+    padding: .3rem .8rem; cursor: pointer;
+  }
+  .theme-btn:hover { border-color: var(--accent); }
+
+  /* ---------- hero ---------- */
+  .hero { padding-block: clamp(2.5rem, 7vw, 5rem) clamp(2rem, 5vw, 3.5rem); display: grid; gap: 2.2rem; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; }
+  .kicker { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 1rem; }
+  h1 {
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(3.2rem, 10vw, 6.6rem);
+    line-height: .92; letter-spacing: -.035em; margin: 0 0 1.4rem; text-wrap: balance;
+  }
+  .lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); max-width: 34rem; margin: 0; color: var(--fg); }
+  .lead strong { font-weight: 600; }
+
+  .statement { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem 1.25rem 1.25rem; }
+  .statement h2 { font-family: var(--font-mono); font-weight: 500; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 .8rem; padding-bottom: .7rem; border-bottom: 1px solid var(--line); }
+  dl.lines { margin: 0; display: grid; gap: .55rem; }
+  .line { display: flex; align-items: baseline; gap: .6rem; font-size: .93rem; }
+  .line dt { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .line .dots { flex: 1 1 1rem; min-width: .8rem; border-bottom: 1px dotted var(--line); transform: translateY(-.28em); }
+  .line dd { margin: 0; text-align: right; min-width: 0; font-weight: 500; }
+
+  /* ---------- sections ---------- */
+  section.block { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1.5rem 2.5rem; padding-block: 2.4rem; border-top: 1px solid var(--line); }
+  section.block > h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -.02em; line-height: 1.15; margin: 0; text-wrap: balance; }
+  section.block > h2 small { display: block; font-family: var(--font-mono); font-weight: 400; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: .5rem; }
+
+  .cols3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+  .cols3 article { border-top: 2px solid var(--accent); padding-top: .8rem; }
+  .cols3 h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin: 0 0 .4rem; letter-spacing: -.01em; }
+  .cols3 p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+  .row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .2rem 1.5rem; }
+  .row + .row, .entry + .entry { margin-top: 1.6rem; }
+  .row h3, .entry h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; margin: 0; }
+  .row h3 span, .entry h3 span { font-family: var(--font-body); font-weight: 400; color: var(--muted); }
+  .period { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul.tight { margin: .5rem 0 0; padding-left: 1.1rem; display: grid; gap: .3rem; color: var(--fg); font-size: .96rem; }
+  ul.tight li::marker { color: var(--accent); }
+  .entry p.note { margin: .3rem 0 0; color: var(--muted); font-size: .93rem; }
+
+  .clients { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .clients li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .15rem 1.5rem; padding-block: .85rem; border-bottom: 1px solid var(--line); }
+  .clients b { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.01em; }
+  .clients b span { font-family: var(--font-body); font-weight: 400; color: var(--muted); font-size: .95rem; }
+  .tag { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+  .caption { margin: .9rem 0 0; font-size: .88rem; color: var(--muted); }
+
+  .awards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+  .award { background: var(--accent-soft); border-radius: 6px; padding: 1.2rem 1.3rem 1.3rem; }
+  .award .period { color: var(--accent); }
+  .award h3 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.4rem, 2.6vw, 1.85rem); line-height: 1.05; letter-spacing: -.025em; margin: .5rem 0 .5rem; text-wrap: balance; }
+  .award p { margin: 0; font-size: .93rem; }
+  .sub { font-family: var(--font-mono); font-weight: 500; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1rem; }
+
+  .skills { display: grid; gap: .8rem; margin: 0; }
+  .skills .line { align-items: baseline; }
+
+  .contact-list { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+  .contact-list li { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; padding: .8rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  .contact-list .lab { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); min-width: 6.5rem; }
+  .contact-list .val { font-weight: 500; overflow-wrap: anywhere; min-width: 0; flex: 1 1 12rem; }
+  .btn {
+    font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none;
+    background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent);
+    border-radius: 4px; padding: .35rem .85rem; display: inline-block;
+  }
+  .btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+  .btn:hover { border-color: var(--fg); }
+  .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+  footer { border-top: 1px solid var(--line); padding-top: 1.4rem; font-family: var(--font-mono); font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    section.block { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; padding-block: 2rem; }
+    .cols3 { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 620px) {
+    .top nav { display: none; }
+    .awards { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Josh Regian</a>
+    <nav aria-label="Sections">
+      <a href="#work">Work</a>
+      <a href="#recognition">Recognition</a>
+      <a href="#background">Background</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch between light and dark theme">Theme</button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <section class="hero" aria-labelledby="name">
+    <div>
+      <p class="kicker">HRIS Consultant &middot; Tangerang, Indonesia</p>
+      <h1 id="name">Josh Regian</h1>
+      <p class="lead">I implement HRIS and configure payroll for Indonesian enterprises, then test it until it matches each client&rsquo;s business requirements. Based at <strong>PT Proint Dinamika</strong>, and studying for a Master&rsquo;s in Information Technology.</p>
+    </div>
+    <aside class="statement" aria-label="Profile summary">
+      <h2>Profile</h2>
+      <dl class="lines">
+        <div class="line"><dt>Role</dt><span class="dots"></span><dd>HRIS Consultant</dd></div>
+        <div class="line"><dt>Company</dt><span class="dots"></span><dd>PT Proint Dinamika</dd></div>
+        <div class="line"><dt>Since</dt><span class="dots"></span><dd>January 2026</dd></div>
+        <div class="line"><dt>Studying</dt><span class="dots"></span><dd>Magister Teknologi Informasi, Universitas Bunda Mulia</dd></div>
+        <div class="line"><dt>Graduates</dt><span class="dots"></span><dd>December 2027 (expected)</dd></div>
+        <div class="line"><dt>Certified</dt><span class="dots"></span><dd>CISDV, Data Visualization</dd></div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="block" id="work" aria-labelledby="h-work">
+    <h2 id="h-work">What I do<small>HRIS implementation</small></h2>
+    <div>
+      <div class="cols3">
+        <article>
+          <h3>Implementation</h3>
+          <p>HRIS implementor across multiple enterprise clients.</p>
+        </article>
+        <article>
+          <h3>Payroll configuration</h3>
+          <p>Payroll modules configured in line with Indonesian payroll and tax compliance standards.</p>
+        </article>
+        <article>
+          <h3>Employee data with SQL</h3>
+          <p>Manage employee data, keep it clean and consistent, and retrieve any information needed from the database using SQL.</p>
+        </article>
+        <article>
+          <h3>Testing and QA</h3>
+          <p>System testing and quality assurance so each configuration meets the client&rsquo;s business requirements.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-clients">
+    <h2 id="h-clients">Clients<small>Via PT Proint Dinamika</small></h2>
+    <div>
+      <ul class="clients">
+        <li><b>PT Cisarua Mountain Dairy Tbk <span>(Cimory)</span></b><span class="tag">Food &amp; beverage</span></li>
+        <li><b>PT Tatamulia Nusantara Indah</b><span class="tag">Construction</span></li>
+        <li><b>PT Garda Bhakti Nusantara</b><span class="tag">Outsourcing services</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-exp">
+    <h2 id="h-exp">Experience<small>Professional</small></h2>
+    <div>
+      <div class="entry">
+        <div class="row"><h3>HRIS Consultant <span>at PT Proint Dinamika</span></h3><span class="period">Jan 2026 &ndash; Present</span></div>
+        <ul class="tight">
+          <li>Serve as HRIS implementor across multiple enterprise clients.</li>
+          <li>Manage and clean employee data, and retrieve information from the database using SQL, so records stay accurate and consistent.</li>
+          <li>Perform system testing and quality assurance (QA) so HRIS configurations meet client business requirements.</li>
+          <li>Configure payroll modules in accordance with Indonesian payroll and tax compliance standards.</li>
+        </ul>
+      </div>
+      <div class="entry">
+        <div class="row"><h3>Campus Representative <span>at Bunda Mulia University</span></h3><span class="period">Dec 2022 &ndash; Oct 2025</span></div>
+        <ul class="tight">
+          <li>Introduced the university, offered available scholarships, and persuaded audiences to choose it for their higher education.</li>
+          <li>Presented to students and their parents on available majors and the campus.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="recognition" aria-labelledby="h-rec">
+    <h2 id="h-rec">Recognition and speaking</h2>
+    <div>
+      <p class="sub">Awards</p>
+      <div class="awards">
+        <article class="award">
+          <span class="period">2025 &middot; Generation 1</span>
+          <h3>Best Campus Representative</h3>
+          <p>Bunda Mulia University. For representing the university to prospective students and their parents.</p>
+        </article>
+        <article class="award">
+          <span class="period">2025 &middot; Generation 1</span>
+          <h3>Best Mentor</h3>
+          <p>Bunda Mulia University. For mentoring newly joined Campus Representatives.</p>
+        </article>
+      </div>
+
+      <p class="sub">Speaking, 2026</p>
+      <div class="entry">
+        <div class="row"><h3>Guest Speaker</h3><span class="period">2026</span></div>
+        <p class="note">Campus Representative Training Program, Generations 3 to 5.</p>
+      </div>
+      <div class="entry">
+        <div class="row"><h3>Speaker</h3><span class="period">2026</span></div>
+        <p class="note">Meet &amp; Greet, Himpunan Mahasiswa Sistem Informasi, Universitas Bunda Mulia. Topic: Communication Skills &amp; Personal Branding.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="background" aria-labelledby="h-edu">
+    <h2 id="h-edu">Education<small>Academic</small></h2>
+    <div>
+      <div class="entry">
+        <div class="row"><h3>Magister Teknologi Informasi (S2) <span>Universitas Bunda Mulia</span></h3><span class="period">Apr 2026 &ndash; Dec 2027 (expected)</span></div>
+      </div>
+      <div class="entry">
+        <div class="row"><h3>Information System (S1) <span>Bunda Mulia University</span></h3><span class="period">2021 &ndash; 2025</span></div>
+        <ul class="tight">
+          <li>Cumulative GPA 3.91 / 4.00.</li>
+          <li>Coursework: UI/UX Design, Data Analyst, Business Analyst, Website, System Analyst.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-lead">
+    <h2 id="h-lead">Leadership<small>Organizations</small></h2>
+    <div>
+      <div class="entry">
+        <div class="row"><h3>Event Division Coordinator <span>Information Systems Association</span></h3><span class="period">2023 &ndash; 2024</span></div>
+        <ul class="tight">
+          <li>Coordinated all events, secured professional speakers, and kept activities engaging.</li>
+          <li>Built and managed event timelines (rundowns) for smooth execution of all association activities.</li>
+        </ul>
+      </div>
+      <div class="entry">
+        <div class="row"><h3>Student Resources and Development <span>Information Systems Association</span></h3><span class="period">2022 &ndash; 2023</span></div>
+        <ul class="tight">
+          <li>Helped develop the skills and knowledge of Information Systems students.</li>
+          <li>Created learning materials for high school students during educational visits.</li>
+        </ul>
+      </div>
+      <div class="entry">
+        <div class="row"><h3>Vice Chairman <span>Jesus In My Campus</span></h3><span class="period">2022 &ndash; 2023</span></div>
+        <ul class="tight">
+          <li>Led the organization to 1st rank in the 2023 KPI assessment among all UKM/UKR.</li>
+          <li>Served as first-in-command, assisting the Chairman in running activities and ensuring overall success.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-skills">
+    <h2 id="h-skills">Skills<small>and certification</small></h2>
+    <dl class="skills">
+      <div class="line"><dt>Technical</dt><span class="dots"></span><dd>MySQL, Python, Tableau, CSS and HTML, Figma, Microsoft Office, Google Workspace</dd></div>
+      <div class="line"><dt>Soft skills</dt><span class="dots"></span><dd>Problem-solving, collaboration, leadership, public speaking</dd></div>
+      <div class="line"><dt>Certification</dt><span class="dots"></span><dd>Certified International Specialist in Data Visualization (CISDV)</dd></div>
+      <div class="line"><dt>Languages</dt><span class="dots"></span><dd>Bahasa Indonesia, English</dd></div>
+    </dl>
+  </section>
+
+  <section class="block" id="contact" aria-labelledby="h-contact">
+    <h2 id="h-contact">Contact<small>Tangerang, Indonesia</small></h2>
+    <ul class="contact-list">
+      <li>
+        <span class="lab">Email</span>
+        <span class="val" id="emailVal">joshregian18@gmail.com</span>
+        <span class="actions"><button class="btn ghost" type="button" data-copy="emailVal">Copy</button></span>
+      </li>
+      <li>
+        <span class="lab">Phone</span>
+        <span class="val" id="phoneVal">+6282246665776</span>
+        <span class="actions">
+          <button class="btn ghost" type="button" data-copy="phoneVal">Copy</button>
+          <a class="btn" href="https://wa.me/6282246665776" target="_blank" rel="noopener">WhatsApp</a>
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>&copy; 2026 Josh Regian</span>
+    <span>HRIS Consultant &middot; Tangerang, Indonesia</span>
+  </footer>
+</main>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("themeBtn");
+
+    function effective() {
+      var t = root.getAttribute("data-theme");
+      if (t) return t;
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    try {
+      var saved = localStorage.getItem("jr-theme");
+      if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+    } catch (e) {}
+    function label() { btn.textContent = effective() === "dark" ? "Light" : "Dark"; }
+    label();
+    btn.addEventListener("click", function () {
+      var next = effective() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("jr-theme", next); } catch (e) {}
+      label();
+    });
+
+    function selectText(el) {
+      var r = document.createRange();
+      r.selectNodeContents(el);
+      var s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+    }
+    document.querySelectorAll("[data-copy]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var el = document.getElementById(b.getAttribute("data-copy"));
+        var text = el.textContent.trim();
+        var original = b.textContent;
+        function done(msg) {
+          b.textContent = msg;
+          setTimeout(function () { b.textContent = original; }, 1600);
+        }
+        try {
+          navigator.clipboard.writeText(text).then(function () { done("Copied"); }, function () { selectText(el); done("Selected"); });
+        } catch (e) { selectText(el); done("Selected"); }
+      });
+    });
+  })();
+</script>
+</html>
